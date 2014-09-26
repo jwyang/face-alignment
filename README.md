@@ -3,7 +3,7 @@ Face alignment in 3000 FPS
 
 This project is built by reproducing (at least partially) the face alignment algorithm in the CVPR 2014 paper: 
 
-  Shaoqing Ren, Xudong Cao, Yichen Wei, Jian Sun; The IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2014, pp. 1685-1692 
+  Face Alignment at 3000 FPS via Regressing Local Binary Features. Shaoqing Ren, Xudong Cao, Yichen Wei, Jian Sun; The IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2014, pp. 1685-1692 
 
 How to run the codes?
 

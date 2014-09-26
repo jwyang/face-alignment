@@ -5,7 +5,7 @@ This project is built by reproducing (at least partially) the face alignment alg
 
   Shaoqing Ren, Xudong Cao, Yichen Wei, Jian Sun; The IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2014, pp. 1685-1692 
 
-1. How to run the codes?
+How to run the codes?
 
 (1) First of all, we need prepare datasets, such as afw, lfpw, helen, ibug, etc. All these can be downloaded freely from http://ibug.doc.ic.ac.uk/resources/facial-point-annotations. 
 
@@ -13,7 +13,7 @@ This project is built by reproducing (at least partially) the face alignment alg
 
 (3) For testing, run test_model.m with dataset name and pre-trained model as input.
 
-2. Dependencies
+Dependencies
 
 (1) liblinear: http://www.csie.ntu.edu.tw/~cjlin/liblinear/.
 

@@ -1,4 +1,20 @@
-face-alignment
-==============
-
 Face alignment in 3000 FPS
+==========================
+
+This project is built by reproducing (at least partially) the face alignment algorithm in the CVPR 2014 paper: 
+
+  Shaoqing Ren, Xudong Cao, Yichen Wei, Jian Sun; The IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2014, pp. 1685-1692 
+
+1. How to run the codes?
+
+(1) First of all, we need prepare datasets, such as afw, lfpw, helen, ibug, etc. All these can be downloaded freely from http://ibug.doc.ic.ac.uk/resources/facial-point-annotations. 
+
+(2) For training, run train_model.m with propriate dataset name.
+
+(3) For testing, run test_model.m with dataset name and pre-trained model as input.
+
+2. Dependencies
+
+(1) liblinear: http://www.csie.ntu.edu.tw/~cjlin/liblinear/.
+
+

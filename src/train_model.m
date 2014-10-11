@@ -68,7 +68,7 @@ end
 
 dbsize = length(Data);
     
-load('Ts_bbox.mat');
+% load('Ts_bbox.mat');
 
 augnumber = Param.augnumber;
 

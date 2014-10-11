@@ -130,7 +130,7 @@ for i = 1:dbsize
                 % shape = rotateshape(shape);   
                 
                 % randomly shift the shape
-                shape = translateshape(shape, Data{indice_shift(sr)}.shape_facedet);
+                shape = translateshape(shape, Data{indice_shift(sr)}.shape_gt);
                                 
                 Data{i}.intermediate_shapes{1}(:, :, sr) = shape;
                 Data{i}.intermediate_bboxes{1}(sr, :) = getbbox(shape);

@@ -68,7 +68,7 @@ end
 
 dbsize = length(Data);
 
-load('Ts_bbox.mat');
+% load('Ts_bbox.mat');
 
 for i = 1:dbsize    
     augnumber = (Param.augnumber);
@@ -98,13 +98,13 @@ for i = 1:dbsize
             sr = (s-1)*(Param.augnumber_rotate+1)*(Param.augnumber_scale+1) + (r-1)*((Param.augnumber_scale+1)) + e;
             if s == 1 && r == 1 && e == 1% initialize as meanshape
                 % estimate the similarity transformation from initial shape to mean shape
-                Data{i}.intermediate_shapes{1}(:,:, sr) = resetshape(Data{i}.bbox_facedet, Param.meanshape);
-                Data{i}.intermediate_bboxes{1}(sr, :) = Data{i}.bbox_facedet;                
+                Data{i}.intermediate_shapes{1}(:,:, sr) = resetshape(Data{i}.bbox_gt, Param.meanshape);
+                Data{i}.intermediate_bboxes{1}(sr, :) = Data{i}.bbox_gt;                
                 Data{i}.tf2meanshape{1} = cp2tform(bsxfun(@minus, Data{i}.intermediate_shapes{1}(:,:, sr), mean(Data{i}.intermediate_shapes{1}(:,:, sr))), ...
                     bsxfun(@minus, meanshape_resize, center_meanshape_resize), 'nonreflective similarity');                
             else  % randomly shift and rotate the meanshape (or groundtruth of other ssubjects)
                 % randomly rotate the shape
-                shape = resetshape(Data{i}.bbox_facedet, Data{indice_rotate(sr)}.shape_gt);      
+                shape = resetshape(Data{i}.bbox_gt, Data{indice_rotate(sr)}.shape_gt);      
                 % shape = rotateshape(meanshape_resize);                      
                 % randomly shift the shape
                 Data{i}.intermediate_shapes{1}(:, :, sr) = shape; % translateshape(shape, Data{indice_shift(sr)}.shape_gt);

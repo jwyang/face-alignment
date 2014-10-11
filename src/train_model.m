@@ -1,4 +1,4 @@
-function LBFRegModel = train_model(dbnames, method, LBFRegModel_initial)
+function LBFRegModel = train_model(dbnames, LBFRegModel_initial)
 %TRAIN_MODEL Summary of this function goes here
 %   Function: train face alignment model
 %   Detailed explanation goes here
@@ -174,25 +174,25 @@ for s = 1:Param.max_numstage
     disp('train random forests for landmarks...');
 
     if isempty(randf{s})        
-        if exist(strcat('randfs\randf', method, num2str(s), '.mat'))
-            load(strcat('randfs\randf', method, num2str(s), '.mat'));
+        if exist(strcat('randfs\randf', num2str(s), '.mat'))
+            load(strcat('randfs\randf', num2str(s), '.mat'));
         else
             tic;            
             randf{s} = train_randomfs(Data, Param, s);
             toc;
-            save(strcat('randfs\randf', method, num2str(s), '.mat'), 'randf', '-v7.3');
+            save(strcat('randfs\randf', num2str(s), '.mat'), 'randf', '-v7.3');
         end
     end
     
     % derive binary codes given learned random forest in current stage
     disp('extract local binary features...');
 
-    if exist(strcat('LBFeats\LBFeats', method, num2str(s), '.mat'))
-        load(strcat('LBFeats\LBFeats', method, num2str(s), '.mat'));
+    if exist(strcat('LBFeats\LBFeats', num2str(s), '.mat'))
+        load(strcat('LBFeats\LBFeats', num2str(s), '.mat'));
     else
         tic;
         binfeatures = derivebinaryfeat(randf{s}, Data, Param, s);
-        save(strcat('LBFeats\LBFeats', method, num2str(s), '.mat'), 'binfeatures', '-v7.3');
+        save(strcat('LBFeats\LBFeats', num2str(s), '.mat'), 'binfeatures', '-v7.3');
         toc;
     end
     
@@ -201,14 +201,12 @@ for s = 1:Param.max_numstage
     tic;
     [W, Data] = globalregression(binfeatures, Data, Param, s);        
     Ws{s} = W;    
-    % save(strcat('Ws\W', method, num2str(s), '.mat'), 'W', '-v7.3');
+    % save(strcat('Ws\W', num2str(s), '.mat'), 'W', '-v7.3');
     toc;      
     
 end
 
 LBFRegModel.ranf = randf;
 LBFRegModel.Ws   = Ws;
-
-% save(strcat('LBFRegModel', method(2:end) , '.mat'), 'LBFRegModel', '-v7.3');
 
 end

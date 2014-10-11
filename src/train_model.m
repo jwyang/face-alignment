@@ -1,4 +1,4 @@
-function LBFRegModel = train_model(dbnames, LBFRegModel_initial)
+function LBFRegModel = train_model(dbnames)
 %TRAIN_MODEL Summary of this function goes here
 %   Function: train face alignment model
 %   Detailed explanation goes here
@@ -162,17 +162,20 @@ end
 randf = cell(Param.max_numstage, 1);
 Ws    = cell(Param.max_numstage, 1);
 
+%{
 if nargin > 2
     n = size(LBFRegModel_initial.ranf, 1);
-    % for i = 1:n
-        randf(1:n, :) = LBFRegModel_initial.ranf;                
-    % end
+    for i = 1:n
+      randf(1:n, :) = LBFRegModel_initial.ranf;                
+    end
 end
+%}
 
 for s = 1:Param.max_numstage
     % learn random forest for s-th stage
     disp('train random forests for landmarks...');
 
+    %{
     if isempty(randf{s})        
         if exist(strcat('randfs\randf', num2str(s), '.mat'))
             load(strcat('randfs\randf', num2str(s), '.mat'));
@@ -183,7 +186,11 @@ for s = 1:Param.max_numstage
             save(strcat('randfs\randf', num2str(s), '.mat'), 'randf', '-v7.3');
         end
     end
-    
+    %}
+    tic;            
+    randf{s} = train_randomfs(Data, Param, s);
+    toc;
+              
     % derive binary codes given learned random forest in current stage
     disp('extract local binary features...');
 

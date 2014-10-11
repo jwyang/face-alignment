@@ -104,8 +104,8 @@ for i = 1:dbsize
             sr = (s-1)*(Param.augnumber_rotate+1)*(Param.augnumber_scale+1) + (r-1)*((Param.augnumber_scale+1)) + e;
             if s == 1 && r == 1 && e == 1% initialize as meanshape
                 % estimate the similarity transformation from initial shape to mean shape
-                Data{i}.intermediate_shapes{1}(:,:, sr) = resetshape(Data{i}.bbox_facedet, Param.meanshape);
-                Data{i}.intermediate_bboxes{1}(sr, :) = Data{i}.bbox_facedet;
+                Data{i}.intermediate_shapes{1}(:,:, sr) = resetshape(Data{i}.bbox_gt, Param.meanshape);
+                Data{i}.intermediate_bboxes{1}(sr, :) = Data{i}.bbox_gt;
                 
                 meanshape_resize = resetshape(Data{i}.intermediate_bboxes{1}(sr, :), Param.meanshape);
                 
@@ -123,7 +123,7 @@ for i = 1:dbsize
             else  % randomly shift and rotate the meanshape (or groundtruth of other ssubjects)
                 % randomly rotate the shape
                 
-                shape = resetshape(Data{i}.bbox_facedet, Param.meanshape);       % Data{indice_rotate(sr)}.shape_gt
+                shape = resetshape(Data{i}.bbox_gt, Param.meanshape);       % Data{indice_rotate(sr)}.shape_gt
                 
                 % shape = scaleshape(shape, scales(sr));
 

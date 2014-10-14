@@ -1,4 +1,4 @@
-function [Data, bboxes] = loadsamples(imgpathlistfile, exc_setlabel)
+function Data = loadsamples(imgpathlistfile, exc_setlabel)
 %LOADSAMPLES Summary of this function goes here
 %   Function: load samples from dbname database
 %   Detailed explanation goes here
@@ -13,21 +13,7 @@ Data = cell(length(imgpathlist), 1);
 
 setnames = {'train' 'test'};
 
-% Create a cascade detector object.
-faceDetector = vision.CascadeObjectDetector();
-
-bboxes_facedet = zeros(length(imgpathlist), 4);
-bboxes_gt      = zeros(length(imgpathlist), 4);
-isdetected = zeros(length(imgpathlist), 1);
-
 parfor i = 1:length(imgpathlist)
-    if ~isempty(exc_setlabel)
-        ind = strfind(imgpathlist{i}, setnames{exc_setlabel});
-        if ~isempty(ind)
-            isdetected(i) = 0;
-            continue;
-        end
-    end
     img = im2uint8(imread(imgpathlist{i}));
     Data{i}.width_orig    = size(img, 2);
     Data{i}.height_orig   = size(img, 1);
@@ -55,51 +41,6 @@ parfor i = 1:length(imgpathlist)
     Data{i}.shape_gt = bsxfun(@minus, Data{i}.shape_gt, double([region(1) region(2)]));
     Data{i}.bbox_gt = getbbox(Data{i}.shape_gt);
     Data{i}.isdet = 0;
-    %{
-    imgOut = insertObjectAnnotation(img_region,'rectangle',bbox,'Face');
-    imshow(imgOut);
-    drawnow;
-    w = waitforbuttonpress;
-    %}
-    
-    % if exc_setlabel == 1
-        % reset the bounding box of face based on the face detector
-        bbox = step(faceDetector, img_region);
-        
-            
-    if isempty(bbox)
-        % if face detection is failed        
-        isdetected(i) = 0;
-        Data{i}.bbox_facedet = getbbox(Data{i}.shape_gt);
-    else
-        int_ratios = zeros(1, size(bbox, 1));
-        for b = 1:size(bbox, 1)
-            area = rectint(Data{i}.bbox_gt, bbox(b, :));
-            int_ratios(b) = (area)/(bbox(b, 3)*bbox(b, 4) + Data{i}.bbox_gt(3)*Data{i}.bbox_gt(4) - area);            
-        end
-        [max_ratio, max_ind] = max(int_ratios);
-        
-        if max_ratio < 0.5  % detection fail
-            isdetected(i) = 0;
-        else
-            Data{i}.bbox_facedet = bbox(max_ind, 1:4);
-            isdetected(i) = 1;
-            % imgOut = insertObjectAnnotation(img_region,'rectangle',Data{i}.bbox_facedet,'Face');
-            % imshow(imgOut);
-        end        
-    end
-    % end
-    % else
-    %    Data{i}.isdet = 0;
-    %    Data{i}.bbox = getbbox(Data{i}.shape_gt);
-    % end
-    
-    %{
-    imgOut = insertObjectAnnotation(img_region,'rectangle',Data{i}.bbox,'Face');    
-    imshow(imgOut);
-    drawnow;
-    w = waitforbuttonpress;
-    %}   
     
     if size(img_region, 3) == 1
         Data{i}.img_gray = img_region;
@@ -116,15 +57,15 @@ ind_valid = ones(1, length(imgpathlist));
 parfor i = 1:length(imgpathlist)
     if ~isempty(exc_setlabel)
         ind = strfind(imgpathlist{i}, setnames{exc_setlabel});
-        if ~isempty(ind) | ~isdetected(i)
+        if ~isempty(ind)
             ind_valid(i) = 0;
         end
     end
 end
 
 % learn the linear transformation from detected bboxes to groundtruth bboxes
-bboxes = [bboxes_gt bboxes_facedet];
-bboxes = bboxes(ind_valid == 1, :);
+% bboxes = [bboxes_gt bboxes_facedet];
+% bboxes = bboxes(ind_valid == 1, :);
 
 Data = Data(ind_valid == 1);
 

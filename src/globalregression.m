@@ -34,20 +34,6 @@ end
 % X : binaryfeatures
 % Y:  gtshapes
 
-% Method 1: closed-form solution by matrix inverse
-% % X^T*X
-% A = binaryfeatures'*binaryfeatures;
-% 
-% % Y^TX
-% B = gtshapes'*binaryfeatures;
-% 
-% % W = B*(A+\lambdaI)^{-1}
-% W = B*inv(A+0.001*ones(size(A)));
-
-% Method 2: iterative optimization using gradient descend 
-% param = '-s 12 -p 0 -c 0.0004 -q heart_scale';
-
-if  1 % stage <= 5
 param = sprintf('-s 12 -p 0 -c %f -q heart_scale', 1/(size(binaryfeatures, 1)));
 W_liblinear = zeros(size(binaryfeatures, 2), size(deltashapes, 2));
 tic;
@@ -57,20 +43,6 @@ parfor o = 1:size(deltashapes, 2)
 end
 toc;
 W = W_liblinear;
-else
-% Method 3: Lasso for sparse regression matrix
-%{
-param_sp.lambda      = 0.3;                             % not more than 20 non-zeros coefficients
-param_sp.lambda2     = 1/(size(binaryfeatures, 1));     % not more than 20 non-zeros coefficients
-param_sp.numThreads = -1;                               % number of processors/cores to use; the default choice is -1
-param_sp.mode       = 2;                                % penalized formulation
-W_sp = zeros(size(binaryfeatures, 2), size(deltashapes, 2));
-tic;
-parfor o = 1:size(deltashapes, 2)
-    W_sp(:, o) = mexLasso(deltashapes(:, o), binaryfeatures, param_sp);
-end
-toc;
-%}
 
 m = size(binaryfeatures, 1); 
 n = size(binaryfeatures, 2); 

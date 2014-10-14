@@ -36,9 +36,8 @@ Tr_Data    = [];
 for i = 1:length(dbnames)
     % load training samples (including training images, and groundtruth shapes)
     imgpathlistfile = strcat('J:\jwyang\Face Alignment\Databases\', dbnames{i}, '\Path_Images.txt');
-    [tr_data, ~] = loadsamples(imgpathlistfile, 2);
+    tr_data = loadsamples(imgpathlistfile, 2);
     Tr_Data = [Tr_Data; tr_data];
-    %Tr_Bboxes = {Tr_Bboxes; bboxes};
 end
 
 % Augmentate data for traing: assign multiple initial shapes to each image

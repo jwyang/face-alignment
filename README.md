@@ -21,3 +21,16 @@ Dependencies
 
 (1) liblinear: http://www.csie.ntu.edu.tw/~cjlin/liblinear/.
 
+Q&A
+
+Q_1: How to get the file Path_Images.txt?
+
+A_1: It can be obtained by run bat file in the root folder of a dataset, the code is simply "dir /b/s/p/w *.jpg>Path_Images.txt".
+
+Q_2: What is Ts_bbox.mat?
+
+A_2: This problem is solved in recent version. Ts_bbox is a transformation matrix to adapt bounding boxes obtained from face detector to the boxes suitable for the face alignment algorithm.
+
+Q_3: How to define the input variable dbnames in train_model and test_model functions?
+
+A_3: It is formed as a cell array {'dbname_1' 'dbname_2' ... 'dbname_N'}. For example, if we use the images in afw for trainig, we then define it as {'afw'}.

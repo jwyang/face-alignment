@@ -44,20 +44,6 @@ end
 toc;
 W = W_liblinear;
 
-m = size(binaryfeatures, 1); 
-n = size(binaryfeatures, 2); 
-k = round(0.3*n);
-w0=randsparse(n,k); 
-bb=binaryfeatures*w0+0.01*randn(m,1);
-lambda=0.001*max(abs(binaryfeatures'*bb));
-tic;
-parfor o = 1:size(deltashapes, 2)
-[W_sp(:, o), ~] = dalsql1(zeros(n,1), binaryfeatures, deltashapes(:, o), lambda);
-end
-toc;
-W = W_sp;
-end
-
 % Predict the location of lanmarks using current regression matrix
 
 deltashapes_bar = binaryfeatures*W;

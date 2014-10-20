@@ -7,6 +7,7 @@ params.augnumber_shift  = 0;   % the number of initial shapes in augmenting trai
 params.augnumber_rotate = 0;   % the number of initial shapes in augmenting training set by rotation
 params.augnumber_scale  = 0;   % the number of initial shapes in augmenting training set by rotation
 params.flipflag         = 0;   % the flag of flipping
+params.ind_usedpts      = 18:68;
 params.augnumber        = (params.augnumber_shift + 1)*(params.augnumber_rotate + 1)*((params.augnumber_scale + 1));
 
 % initialize parameters for training random forest

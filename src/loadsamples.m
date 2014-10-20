@@ -22,6 +22,7 @@ parfor i = 1:length(imgpathlist)
     % shapepath = strrep(imgpathlist{i}, 'png', 'pts');
     shapepath = strcat(imgpathlist{i}(1:end-3), 'pts');
     Data{i}.shape_gt = double(loadshape(shapepath));    
+    % Data{i}.shape_gt = Data{i}.shape_gt(params.ind_usedpts, :);
     % bbox     =  bounding_boxes_allsamples{i}.bb_detector; %
     Data{i}.bbox_gt = getbbox(Data{i}.shape_gt); % [bbox(1) bbox(2) bbox(3)-bbox(1) bbox(4)-bbox(2)];
     
@@ -40,6 +41,10 @@ parfor i = 1:length(imgpathlist)
     % recalculate the location of groundtruth shape and bounding box
     Data{i}.shape_gt = bsxfun(@minus, Data{i}.shape_gt, double([region(1) region(2)]));
     Data{i}.bbox_gt = getbbox(Data{i}.shape_gt);
+    
+    % only use inner points
+    Data{i}.shape_gt = Data{i}.shape_gt;
+    
     Data{i}.isdet = 0;
     
     if size(img_region, 3) == 1

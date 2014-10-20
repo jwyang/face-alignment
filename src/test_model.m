@@ -15,16 +15,16 @@ if size(dbnames) > 1 & sum(strcmp(dbnames, 'COFW')) > 0
 end
 
 if sum(strcmp(dbnames, 'COFW')) > 0
-    load('..\Models\InitialShape_29.mat');
+    load('..\initial_shape\InitialShape_29.mat');
     params.meanshape        = S0;
 else
-    load('..\Models\InitialShape_68.mat');
-    params.meanshape        = S0;
-end 
+    load('..\initial_shape\InitialShape_68.mat');
+    params.meanshape        = S0(params.ind_usedpts, :);
+end
 
 if params.isparallel
-    if matlabpool('size')<=0 %判断并行计算环境是否已然启动
-        matlabpool('open','local',12); %若尚未启动，则启动并行环境
+    if isempty(gcp('nocreate')) %判断并行计算环境是否已然启动
+        parpool(4); %若尚未启动，则启动并行环境
     else
         disp('Already initialized'); %说明并行环境已经启动。
     end
@@ -34,7 +34,7 @@ end
 Te_Data = [];
 for i = 1:length(dbnames)
     % load training samples (including training images, and groundtruth shapes)
-    imgpathlistfile = strcat('J:\jwyang\Face Alignment\Databases\', dbnames{i}, '\Path_Images.txt');
+    imgpathlistfile = strcat('D:\Projects_Face_Detection\Datasets\', dbnames{i}, '\Path_Images.txt');
     te_data = loadsamples(imgpathlistfile, 1);
     Te_Data = [Te_Data; te_data];
 end
@@ -60,10 +60,16 @@ if Param.flipflag % if conduct flipping
         Data_flip{i}.bbox_gt        = Data{i}.bbox_gt;
         Data_flip{i}.bbox_gt(1)     = Data_flip{i}.width - Data_flip{i}.bbox_gt(1) - Data_flip{i}.bbox_gt(3);       
         
-        Data_flip{i}.bbox_facedet        = Data{i}.bbox_facedet;
-        Data_flip{i}.bbox_facedet(1)     = Data_flip{i}.width - Data_flip{i}.bbox_facedet(1) - Data_flip{i}.bbox_facedet(3);       
+        % Data_flip{i}.bbox_facedet        = Data{i}.bbox_facedet;
+        % Data_flip{i}.bbox_facedet(1)     = Data_flip{i}.width - Data_flip{i}.bbox_facedet(1) - Data_flip{i}.bbox_facedet(3);       
     end
     Data = [Data; Data_flip];
+end
+
+% choose corresponding points for training
+for i = 1:length(Data)
+    Data{i}.shape_gt = Data{i}.shape_gt(params.ind_usedpts, :);
+    Data{i}.bbox_gt = getbbox(Data{i}.shape_gt);
 end
 
 dbsize = length(Data);

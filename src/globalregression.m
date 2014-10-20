@@ -22,6 +22,8 @@ for i = 1:dbsize*(params.augnumber)
     shape_gt = Tr_Data{k}.shape_gt;    
     if size(shape_gt, 1) == 68
         dist_pupils(i) = norm((mean(shape_gt(37:42, :)) - mean(shape_gt(43:48, :))));
+    elseif size(shape_gt, 1) == 51
+        dist_pupils(i) = norm((mean(shape_gt(20, :)) - mean(shape_gt(29, :))));
     elseif size(shape_gt, 1) == 29
         dist_pupils(i) = norm((mean(shape_gt(9:2:17, :)) - mean(shape_gt(10:2:18, :))));        
     end
@@ -89,7 +91,7 @@ for i = 1:dbsize*(params.augnumber)
     Tr_Data{k}.intermediate_shapes{stage+1}(:, :, s) = shape_newstage;
     
     % update transformation of current intermediate shape to meanshape
-    Tr_Data{k}.intermediate_bboxes{stage+1}(s, :) = getbbox(shape_newstage);
+    Tr_Data{k}.intermediate_bboxes{stage+1}(s, :) = getbbox(Tr_Data{k}.intermediate_shapes{stage+1}(:, :, s));
     
     meanshape_resize = resetshape(Tr_Data{k}.intermediate_bboxes{stage+1}(s, :), params.meanshape);    
     

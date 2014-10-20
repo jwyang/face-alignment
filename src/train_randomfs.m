@@ -30,9 +30,9 @@ end
 params.radius = ([0:1/30:1]');
 params.angles = 2*pi*[0:1/36:1]';
 
-rfs = cell(size(params.meanshape, 1), params.max_numtrees);
+rfs = cell(length(params.meanshape), params.max_numtrees);
 
-parfor i = 1:size(params.meanshape, 1)
+parfor i = 1:length(params.meanshape)
     rf = cell(1, params.max_numtrees);
     disp(strcat(num2str(i), 'th landmark is processing...'));
     for t = 1:params.max_numtrees

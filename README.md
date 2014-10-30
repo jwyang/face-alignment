@@ -34,3 +34,5 @@ A_2: This problem is solved in recent version. Ts_bbox is a transformation matri
 Q_3: How to define the input variable dbnames in train_model and test_model functions?
 
 A_3: It is formed as a cell array {'dbname_1' 'dbname_2' ... 'dbname_N'}. For example, if we use the images in afw for trainig, we then define it as {'afw'}.
+
+At last, for those who are from china, I am glad to discuss with you in the Tecent QQ group: 180634020

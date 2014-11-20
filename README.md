@@ -35,4 +35,18 @@ Q_3: How to define the input variable dbnames in train_model and test_model func
 
 A_3: It is formed as a cell array {'dbname_1' 'dbname_2' ... 'dbname_N'}. For example, if we use the images in afw for trainig, we then define it as {'afw'}.
 
+Q_4: Why does an error occur when initializing parallel computing?
+
+A_4: It may be caused by Matlab version. For Matlab 2014, it will be okay. For earlier version, please use the following commands:
+
+if params.isparallel
+    if matlabpool('size') <= 0 
+        matlabpool('open','local',4); 
+    else
+        disp('Already initialized');
+    end
+end
+
 At last, for those who are from china, I am glad to discuss with you in the Tecent QQ group: 180634020
+
+

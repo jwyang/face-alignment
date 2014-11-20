@@ -40,13 +40,19 @@ Q_4: Why does an error occur when initializing parallel computing?
 A_4: It may be caused by Matlab version. For Matlab 2014, it will be okay. For earlier version, please use the following commands:
 
 
-if params.isparallel ＜/br＞
-   if matlabpool('size') <= 0 ＜/br＞
-       matlabpool('open','local',4); ＜/br＞
-   else ＜/br＞
-       disp('Already initialized'); ＜/br＞
-   end ＜/br＞
-end ＜/br＞
+  if params.isparallel
+
+     if matlabpool('size') <= 0
+
+         matlabpool('open','local',4);
+
+     else
+
+         disp('Already initialized');
+
+     end
+
+  end
 
 At last, for those who are from china, I am glad to discuss with you in the Tecent QQ group: 180634020
 

@@ -13,6 +13,12 @@ Data = cell(length(imgpathlist), 1);
 
 setnames = {'train' 'test'};
 
+% Create a cascade detector object.
+faceDetector = vision.CascadeObjectDetector();
+bboxes_facedet = zeros(length(imgpathlist), 4);
+bboxes_gt      = zeros(length(imgpathlist), 4);
+isdetected = zeros(length(imgpathlist), 1);
+
 parfor i = 1:length(imgpathlist)
     img = im2uint8(imread(imgpathlist{i}));
     Data{i}.width_orig    = size(img, 2);
@@ -38,14 +44,38 @@ parfor i = 1:length(imgpathlist)
     
     img_region = img(region(2):bottom_y, region(1):right_x, :);
     
-    % recalculate the location of groundtruth shape and bounding box
     Data{i}.shape_gt = bsxfun(@minus, Data{i}.shape_gt, double([region(1) region(2)]));
     Data{i}.bbox_gt = getbbox(Data{i}.shape_gt);
     
-    % only use inner points
-    Data{i}.shape_gt = Data{i}.shape_gt;
-    
-    Data{i}.isdet = 0;
+    Data{i}.bbox_facedet = getbbox(Data{i}.shape_gt);
+    % perform face detection using matlab face detector
+    %{
+    bbox = step(faceDetector, img_region);
+    if isempty(bbox)
+        % if face detection is failed        
+        isdetected(i) = 1;
+        Data{i}.bbox_facedet = getbbox(Data{i}.shape_gt);
+    else
+        int_ratios = zeros(1, size(bbox, 1));
+        for b = 1:size(bbox, 1)
+            area = rectint(Data{i}.bbox_gt, bbox(b, :));
+            int_ratios(b) = (area)/(bbox(b, 3)*bbox(b, 4) + Data{i}.bbox_gt(3)*Data{i}.bbox_gt(4) - area);            
+        end
+        [max_ratio, max_ind] = max(int_ratios);
+        
+        if max_ratio < 0.4  % detection fail
+            isdetected(i) = 0;
+        else
+            Data{i}.bbox_facedet = bbox(max_ind, 1:4);
+            isdetected(i) = 1;
+            % imgOut = insertObjectAnnotation(img_region,'rectangle',Data{i}.bbox_facedet,'Face');
+            % imshow(imgOut);
+        end   
+    end
+    %}
+    % recalculate the location of groundtruth shape and bounding box
+    % Data{i}.shape_gt = bsxfun(@minus, Data{i}.shape_gt, double([region(1) region(2)]));
+    % Data{i}.bbox_gt = getbbox(Data{i}.shape_gt);
     
     if size(img_region, 3) == 1
         Data{i}.img_gray = img_region;
@@ -62,7 +92,7 @@ ind_valid = ones(1, length(imgpathlist));
 parfor i = 1:length(imgpathlist)
     if ~isempty(exc_setlabel)
         ind = strfind(imgpathlist{i}, setnames{exc_setlabel});
-        if ~isempty(ind)
+        if ~isempty(ind) % | ~isdetected(i)
             ind_valid(i) = 0;
         end
     end

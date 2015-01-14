@@ -108,8 +108,8 @@ parfor i = 1:dbsize*(params.augnumber)
     shapes   = Tr_Data{k}.intermediate_shapes{stage};
     shape    = shapes(:, :, s);
     
-    tf2meanshape = Tr_Data{k}.tf2meanshape{s};
-    
+    % tf2meanshape = Tr_Data{k}.tf2meanshape{s};
+    meanshape2tf = Tr_Data{k}.meanshape2tf{s};
     %{
     feats_cell   = cell(size(params.meanshape, 1), params.max_numtrees);
        
@@ -140,7 +140,7 @@ parfor i = 1:dbsize*(params.augnumber)
     num_leafnodes = zeros(1, size(params.meanshape, 1));
     for l = 1:size(params.meanshape, 1)
         % concatenate all nodes of all random trees
-        [binfeature_lmarks{l}, num_leafnodes(l)]= lbf_fast(randf(l, :), feats{l}, isleaf{l}, threshs{l}, cnodes{l}, img_gray, bbox, shape(l, :), tf2meanshape, params, stage);
+        [binfeature_lmarks{l}, num_leafnodes(l)]= lbf_fast(randf(l, :), feats{l}, isleaf{l}, threshs{l}, cnodes{l}, img_gray, bbox, shape(l, :), meanshape2tf, params, stage);
     end
     
     cumnum_leafnodes = [0 cumsum(num_leafnodes)];
@@ -231,7 +231,7 @@ end
 
 end
 
-function [binfeature, num_leafnodes] = lbf_fast(rf, feats, isleaf, threshs, cnodes, img_gray, bbox, shape, tf2meanshape, params, stage)
+function [binfeature, num_leafnodes] = lbf_fast(rf, feats, isleaf, threshs, cnodes, img_gray, bbox, shape, meanshape2tf, params, stage)
 
 %{
 num_rfnodes = 0;
@@ -271,19 +271,23 @@ pixel_b_x_imgcoord = cos(anglepairs(:, 2)).*radiuspairs(:, 2)*params.max_raio_ra
 pixel_b_y_imgcoord = sin(anglepairs(:, 2)).*radiuspairs(:, 2)*params.max_raio_radius(stage)*bbox(4);
 
 % no transformaiton
-
+%{
 pixel_a_x_lmcoord = pixel_a_x_imgcoord;
 pixel_a_y_lmcoord = pixel_a_y_imgcoord;
     
 pixel_b_x_lmcoord = pixel_b_x_imgcoord;
 pixel_b_y_lmcoord = pixel_b_y_imgcoord;
-
+%}
 
 % transform the pixels from image coordinate (meanshape) to coordinate of current shape
-%{
-[pixel_a_x_lmcoord, pixel_a_y_lmcoord] = tforminv(tf2meanshape, pixel_a_x_imgcoord, pixel_a_y_imgcoord);
-[pixel_b_x_lmcoord, pixel_b_y_lmcoord] = tforminv(tf2meanshape, pixel_b_x_imgcoord, pixel_b_y_imgcoord);
-%}
+
+[pixel_a_x_lmcoord, pixel_a_y_lmcoord] = transformPointsForward(meanshape2tf, pixel_a_x_imgcoord', pixel_a_y_imgcoord');
+pixel_a_x_lmcoord = pixel_a_x_lmcoord';
+pixel_a_y_lmcoord = pixel_a_y_lmcoord';
+
+[pixel_b_x_lmcoord, pixel_b_y_lmcoord] = transformPointsForward(meanshape2tf, pixel_b_x_imgcoord', pixel_b_y_imgcoord');
+pixel_b_x_lmcoord = pixel_b_x_lmcoord';
+pixel_b_y_lmcoord = pixel_b_y_lmcoord';
 
 pixel_a_x = ceil(pixel_a_x_lmcoord + shape(1));
 pixel_a_y = ceil(pixel_a_y_lmcoord + shape(2));
@@ -297,7 +301,8 @@ pixel_a_y = max(1, min(pixel_a_y, height));
 pixel_b_x = max(1, min(pixel_b_x, width));
 pixel_b_y = max(1, min(pixel_b_y, height));
 
-pdfeats = int16(img_gray(pixel_a_y + (pixel_a_x-1)*height)) - int16(img_gray(pixel_b_y + (pixel_b_x-1)*height));
+pdfeats = double(img_gray(pixel_a_y + (pixel_a_x-1)*height)) - double(img_gray(pixel_b_y + (pixel_b_x-1)*height));
+    % ./ double(img_gray(pixel_a_y + (pixel_a_x-1)*height)) + double(img_gray(pixel_b_y + (pixel_b_x-1)*height));
 
 cind = (pdfeats >= threshs) + 1;
 

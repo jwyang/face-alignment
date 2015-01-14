@@ -1,4 +1,3 @@
-function test_model(dbnames, LBFRegModel)
 %TRAIN_MODEL Summary of this function goes here
 %   Function: test face alignment model
 %   Detailed explanation goes here
@@ -6,7 +5,6 @@ function test_model(dbnames, LBFRegModel)
 %       dbnames: the names of database
 % Configure the parameters for training model
 global params;
-global Te_Data;
 config_te;
 
 if size(dbnames) > 1 & sum(strcmp(dbnames, 'COFW')) > 0
@@ -19,7 +17,7 @@ if sum(strcmp(dbnames, 'COFW')) > 0
     params.meanshape        = S0;
 else
     load('..\initial_shape\InitialShape_68.mat');
-    params.meanshape        = S0(params.ind_usedpts, :);
+    params.meanshape        = S0;
 end
 
 if params.isparallel
@@ -60,69 +58,103 @@ if Param.flipflag % if conduct flipping
         Data_flip{i}.bbox_gt        = Data{i}.bbox_gt;
         Data_flip{i}.bbox_gt(1)     = Data_flip{i}.width - Data_flip{i}.bbox_gt(1) - Data_flip{i}.bbox_gt(3);       
         
-        % Data_flip{i}.bbox_facedet        = Data{i}.bbox_facedet;
-        % Data_flip{i}.bbox_facedet(1)     = Data_flip{i}.width - Data_flip{i}.bbox_facedet(1) - Data_flip{i}.bbox_facedet(3);       
+        Data_flip{i}.bbox_facedet        = Data{i}.bbox_facedet;
+        Data_flip{i}.bbox_facedet(1)     = Data_flip{i}.width - Data_flip{i}.bbox_facedet(1) - Data_flip{i}.bbox_facedet(3);       
     end
     Data = [Data; Data_flip];
 end
 
 % choose corresponding points for training
 for i = 1:length(Data)
-    Data{i}.shape_gt = Data{i}.shape_gt(params.ind_usedpts, :);
+    Data{i}.shape_gt = Data{i}.shape_gt(Param.ind_usedpts, :);
     Data{i}.bbox_gt = getbbox(Data{i}.shape_gt);
+    
+    % modify detection boxes 
+    shape_facedet = resetshape(Data{i}.bbox_facedet, Param.meanshape);
+    shape_facedet = shape_facedet(Param.ind_usedpts, :);
+    Data{i}.bbox_facedet = getbbox(shape_facedet);
+    
 end
 
+Param.meanshape        = S0(Param.ind_usedpts, :);
 dbsize = length(Data);
 
 % load('Ts_bbox.mat');
 
-for i = 1:dbsize    
-    augnumber = (Param.augnumber);
-    
+for i = 1:dbsize        
+    % initializ the shape of current face image by randomly selecting multiple shapes from other face images       
     % indice = ceil(dbsize*rand(1, augnumber));  
 
     indice_rotate = ceil(dbsize*rand(1, augnumber));  
     indice_shift  = ceil(dbsize*rand(1, augnumber));  
+    scales        = 1 + 0.2*(rand([1 augnumber]) - 0.5);
     
     Data{i}.intermediate_shapes = cell(1, Param.max_numstage);
     Data{i}.intermediate_bboxes = cell(1, Param.max_numstage);
     
     Data{i}.intermediate_shapes{1} = zeros([size(Param.meanshape), augnumber]);
     Data{i}.intermediate_bboxes{1} = zeros([augnumber, size(Data{i}.bbox_gt, 2)]);
-
-    % Data{i}.bbox_facedet = Data{i}.bbox_facedet*ts_bbox;
-
+    
     Data{i}.shapes_residual = zeros([size(Param.meanshape), augnumber]);
-    Data{i}.tf2meanshape = cell(augnumber, 1);        
-    
-    meanshape_resize = resetshape(Data{i}.bbox_gt, Param.meanshape); 
-    center_meanshape_resize = mean(meanshape_resize);
-    
-    for s = 1:Param.augnumber_shift+1
-        for r = 1:Param.augnumber_rotate+1
-            for e = 1:Param.augnumber_scale+1
-            sr = (s-1)*(Param.augnumber_rotate+1)*(Param.augnumber_scale+1) + (r-1)*((Param.augnumber_scale+1)) + e;
-            if s == 1 && r == 1 && e == 1% initialize as meanshape
-                % estimate the similarity transformation from initial shape to mean shape
-                Data{i}.intermediate_shapes{1}(:,:, sr) = resetshape(Data{i}.bbox_gt, Param.meanshape);
-                Data{i}.intermediate_bboxes{1}(sr, :) = Data{i}.bbox_gt;                
-                Data{i}.tf2meanshape{1} = cp2tform(bsxfun(@minus, Data{i}.intermediate_shapes{1}(:,:, sr), mean(Data{i}.intermediate_shapes{1}(:,:, sr))), ...
-                    bsxfun(@minus, meanshape_resize, center_meanshape_resize), 'nonreflective similarity');                
-            else  % randomly shift and rotate the meanshape (or groundtruth of other ssubjects)
-                % randomly rotate the shape
-                shape = resetshape(Data{i}.bbox_gt, Data{indice_rotate(sr)}.shape_gt);      
-                % shape = rotateshape(meanshape_resize);                      
-                % randomly shift the shape
-                Data{i}.intermediate_shapes{1}(:, :, sr) = shape; % translateshape(shape, Data{indice_shift(sr)}.shape_gt);
-                
-                Data{i}.tf2meanshape{sr} = cp2tform(bsxfun(@minus, Data{i}.intermediate_shapes{1}(:,:, sr), mean(Data{i}.intermediate_shapes{1}(:,:, sr))), ...
-                    bsxfun(@minus, meanshape_resize, center_meanshape_resize), 'nonreflective similarity');        
-            end    
-            %{
-            drawshapes(Data{i}.img_gray, [Data{i}.intermediate_shapes{1}(:, :, 1) Data{i}.intermediate_shapes{1}(:, :, sr)]);
-            hold off;
-            %}
+    Data{i}.tf2meanshape = cell(augnumber, 1);
+    Data{i}.meanshape2tf = cell(augnumber, 1);
+        
+    % if Data{i}.isdet == 1
+    %    Data{i}.bbox_facedet = Data{i}.bbox_facedet*ts_bbox;
+    % end     
+    for sr = 1:params.augnumber
+        if sr == 1
+            % estimate the similarity transformation from initial shape to mean shape
+            % Data{i}.intermediate_shapes{1}(:,:, sr) = resetshape(Data{i}.bbox_gt, Param.meanshape);
+            % Data{i}.intermediate_bboxes{1}(sr, :) = Data{i}.bbox_gt;
+            Data{i}.intermediate_shapes{1}(:,:, sr) = resetshape(Data{i}.bbox_facedet, Param.meanshape);
+            Data{i}.intermediate_bboxes{1}(sr, :) = Data{i}.bbox_facedet;
+            
+            meanshape_resize = resetshape(Data{i}.intermediate_bboxes{1}(sr, :), Param.meanshape);
+                        
+            Data{i}.tf2meanshape{1} = fitgeotrans(bsxfun(@minus, Data{i}.intermediate_shapes{1}(1:end,:, 1), mean(Data{i}.intermediate_shapes{1}(1:end,:, 1))), ...
+                (bsxfun(@minus, meanshape_resize(1:end, :), mean(meanshape_resize(1:end, :)))), 'NonreflectiveSimilarity');
+            Data{i}.meanshape2tf{1} = fitgeotrans((bsxfun(@minus, meanshape_resize(1:end, :), mean(meanshape_resize(1:end, :)))), ...
+                bsxfun(@minus, Data{i}.intermediate_shapes{1}(1:end,:, 1), mean(Data{i}.intermediate_shapes{1}(1:end,:, 1))), 'NonreflectiveSimilarity');
+                        
+            % calculate the residual shape from initial shape to groundtruth shape under normalization scale
+            shape_residual = bsxfun(@rdivide, Data{i}.shape_gt - Data{i}.intermediate_shapes{1}(:,:, 1), [Data{i}.intermediate_bboxes{1}(1, 3) Data{i}.intermediate_bboxes{1}(1, 4)]);
+            % transform the shape residual in the image coordinate to the mean shape coordinate
+            [u, v] = transformPointsForward(Data{i}.tf2meanshape{1}, shape_residual(:, 1)', shape_residual(:, 2)');
+            Data{i}.shapes_residual(:, 1, 1) = u';
+            Data{i}.shapes_residual(:, 2, 1) = v';
+        else
+            % randomly rotate the shape            
+            % shape = resetshape(Data{i}.bbox_gt, Param.meanshape);       % Data{indice_rotate(sr)}.shape_gt
+            shape = resetshape(Data{i}.bbox_facedet, Param.meanshape);       % Data{indice_rotate(sr)}.shape_gt
+            
+            if params.augnumber_scale ~= 0
+                shape = scaleshape(shape, scales(sr));
             end
+            
+            if params.augnumber_rotate ~= 0
+                shape = rotateshape(shape);
+            end
+            
+            if params.augnumber_shift ~= 0
+                shape = translateshape(shape, Data{indice_shift(sr)}.shape_gt);
+            end
+            
+            Data{i}.intermediate_shapes{1}(:, :, sr) = shape;
+            Data{i}.intermediate_bboxes{1}(sr, :) = getbbox(shape);
+            
+            meanshape_resize = resetshape(Data{i}.intermediate_bboxes{1}(sr, :), Param.meanshape);
+                        
+            Data{i}.tf2meanshape{sr} = fitgeotrans(bsxfun(@minus, Data{i}.intermediate_shapes{1}(1:end,:, sr), mean(Data{i}.intermediate_shapes{1}(1:end,:, sr))), ...
+                bsxfun(@minus, meanshape_resize(1:end, :), mean(meanshape_resize(1:end, :))), 'NonreflectiveSimilarity');
+            Data{i}.meanshape2tf{sr} = fitgeotrans(bsxfun(@minus, meanshape_resize(1:end, :), mean(meanshape_resize(1:end, :))), ...
+                bsxfun(@minus, Data{i}.intermediate_shapes{1}(1:end,:, sr), mean(Data{i}.intermediate_shapes{1}(1:end,:, sr))), 'NonreflectiveSimilarity');
+                        
+            shape_residual = bsxfun(@rdivide, Data{i}.shape_gt - Data{i}.intermediate_shapes{1}(:,:, sr), [Data{i}.intermediate_bboxes{1}(sr, 3) Data{i}.intermediate_bboxes{1}(sr, 4)]);
+            [u, v] = transformPointsForward(Data{i}.tf2meanshape{1}, shape_residual(:, 1)', shape_residual(:, 2)');
+            Data{i}.shapes_residual(:, 1, sr) = u';
+            Data{i}.shapes_residual(:, 2, sr) = v';
+            % Data{i}.shapes_residual(:, :, sr) = tformfwd(Data{i}.tf2meanshape{sr}, shape_residual(:, 1), shape_residual(:, 2));
         end
     end
 end
@@ -147,22 +179,21 @@ for s = 1:params.max_numstage
     % derive binary codes given learned random forest in current stage
     
     disp('extract local binary features...');
-    if ~exist(strcat(dbname_str, '\lbfeatures_', num2str(s), '.mat'))
+    % if ~exist(strcat(dbname_str, '\lbfeatures_', num2str(s), '.mat'))
         tic;
-        binfeatures = derivebinaryfeat(randf{s}, Data, Param, s);
+        binfeatures = derivebinaryfeat(randf{min(s,  params.max_numstage)}, Data, Param, min(s,  params.max_numstage));
+        % binfeatures = derivebinaryfeat(TrModel{s}.RF, Data, Param, min(s,  params.max_numstage));
         toc;    
-        save(strcat(dbname_str, '\lbfeatures_', num2str(s), '.mat'), 'binfeatures');
-    else
-        load(strcat(dbname_str, '\lbfeatures_', num2str(s), '.mat'));
-    end
+        % save(strcat(dbname_str, '\lbfeatures_', num2str(min(s,  params.max_numstage)), '.mat'), 'binfeatures');
+    % else
+    %     load(strcat(dbname_str, '\lbfeatures_', num2str(s), '.mat'));
+    % end
     % predict the locations of landmarks in current stage
     tic;
     disp('predict landmark locations...');
 
-    Data = globalprediction(binfeatures, Ws{s}, Data, Param, s);        
+    Data = globalprediction(binfeatures, Ws{min(s,  params.max_numstage)}, Data, Param, min(s,  params.max_numstage));        
+    % Data = globalprediction(binfeatures, TrModel{s}.W, Data, Param, min(s,  params.max_numstage));        
     toc;        
     
 end
-
-end
-

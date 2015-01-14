@@ -22,9 +22,11 @@ for i = 1:dbsize*(params.augnumber)
     gtshapes(:, :, i) = reshape(shape_gt(:), size(params.meanshape));
     
     % left eye: 37-42
-    % right eye: 43-48
+    % right eye: 43-48   
     if size(shape_gt, 1) == 68
         dist_pupils(i) = norm((mean(shape_gt(37:42, :)) - mean(shape_gt(43:48, :))));
+    elseif size(shape_gt, 1) == 51
+        dist_pupils(i) = norm((mean(shape_gt(20, :)) - mean(shape_gt(29, :))));
     elseif size(shape_gt, 1) == 29
         dist_pupils(i) = norm((mean(shape_gt(9:2:17, :)) - mean(shape_gt(10:2:18, :))));        
     end
@@ -46,7 +48,9 @@ for i = 1:dbsize*(params.augnumber)
     deltashapes_bar_xy = reshape(deltashapes_bar(i, :), [uint8(size(deltashapes_bar, 2)/2) 2]);
 
     % transform above delta shape into the coordinate of current intermmediate shape
-    delta_shape_intermmed_coord = tforminv(Te_Data{k}.tf2meanshape{s}, deltashapes_bar_xy(:, 1), deltashapes_bar_xy(:, 2));
+    % delta_shape_intermmed_coord = deltashapes_bar_xy;
+    [u, v] = transformPointsForward(Te_Data{k}.meanshape2tf{s}, deltashapes_bar_xy(:, 1)', deltashapes_bar_xy(:, 2)');
+    delta_shape_intermmed_coord = [u', v'];
     
     delta_shape_meanshape_coord = bsxfun(@times, delta_shape_intermmed_coord, Te_Data{k}.intermediate_bboxes{stage}(s, 3:4));
     
@@ -60,10 +64,12 @@ for i = 1:dbsize*(params.augnumber)
     
     % update transformation of current intermediate shape to meanshape
     meanshape_resize = resetshape(Te_Data{k}.intermediate_bboxes{stage+1}(s, :) , params.meanshape);        
-    Te_Data{k}.tf2meanshape{s} = cp2tform(bsxfun(@minus, Te_Data{k}.intermediate_shapes{stage+1}(:,:, s), mean(Te_Data{k}.intermediate_shapes{stage+1}(:,:, s))), ...
-        bsxfun(@minus, meanshape_resize(:, :), mean(meanshape_resize(:, :))), 'nonreflective similarity');
+    Te_Data{k}.tf2meanshape{s} = fitgeotrans(bsxfun(@minus, Te_Data{k}.intermediate_shapes{stage+1}(:,:, s), mean(Te_Data{k}.intermediate_shapes{stage+1}(:,:, s))), ...
+        bsxfun(@minus, meanshape_resize(:, :), mean(meanshape_resize(:, :))), 'nonreflectivesimilarity');
+    Te_Data{k}.meanshape2tf{s} = fitgeotrans(bsxfun(@minus, meanshape_resize(:, :), mean(meanshape_resize(:, :))), ...
+        bsxfun(@minus, Te_Data{k}.intermediate_shapes{stage+1}(:,:, s), mean(Te_Data{k}.intermediate_shapes{stage+1}(:,:, s))), 'nonreflectivesimilarity');
     
-    
+    %{
     if stage >= params.max_numstage 
         % [Te_Data{k}.shape_gt Te_Data{k}.intermediate_shapes{1}(:,:, s) shape_newstage]
         drawshapes(Te_Data{k}.img_gray, [Te_Data{k}.shape_gt Te_Data{k}.intermediate_shapes{1}(:,:, s) shape_newstage]);       
@@ -72,7 +78,7 @@ for i = 1:dbsize*(params.augnumber)
         error_per_image = compute_error(gtshapes(:, :, i), predshapes(:, :, i))
         w = waitforbuttonpress;
     end
-    
+    %}
 end
 
 error_per_image = compute_error(gtshapes, predshapes);
@@ -107,9 +113,11 @@ for i =1:num_of_images
     if num_of_points == 68
         interocular_distance = norm(mean(ground_truth_points(37:42,:))-mean(ground_truth_points(43:48,:)));  % norm((mean(shape_gt(37:42, :)) - mean(shape_gt(43:48, :))));
     elseif num_of_points == 51
-        interocular_distance = norm(ground_truth_points(20,:)-ground_truth_points(29,:));
+        interocular_distance = norm(ground_truth_points(20,:) - ground_truth_points(29,:));
     elseif num_of_points == 29
         interocular_distance = norm(mean(ground_truth_points(9:2:17,:))-mean(ground_truth_points(10:2:18,:)));        
+    else
+        interocular_distance = norm(mean(ground_truth_points(1:2,:))-mean(ground_truth_points(end - 1:end,:)));        
     end
     
     sum=0;

@@ -34,7 +34,7 @@ rfs = cell(length(params.meanshape), params.max_numtrees);
 
 parfor i = 1:length(params.meanshape)
     rf = cell(1, params.max_numtrees);
-    disp(strcat(num2str(i), 'th landmark is processing...'));
+    % disp(strcat(num2str(i), 'th landmark is processing...'));
     for t = 1:params.max_numtrees
         % disp(strcat('training', {''}, num2str(t), '-th tree for', {''}, num2str(lmarkID), '-th landmark'));
         
@@ -132,7 +132,7 @@ parfor i = 1:length(params.meanshape)
         end
         
     end
-    disp(strcat(num2str(i), 'th landmark is over'));
+    % disp(strcat(num2str(i), 'th landmark is over'));
     rfs(i, :) = rf;
 end
 end
@@ -184,10 +184,13 @@ for i = 1:length(ind_samples)
     
     % transform the pixels from image coordinate (meanshape) to coordinate of current shape
     
-    [pixel_a_x_lmcoord, pixel_a_y_lmcoord] = tformfwd(Tr_Data{s}.meanshape2tf{k}, pixel_a_x_imgcoord, pixel_a_y_imgcoord);    
+    [pixel_a_x_lmcoord, pixel_a_y_lmcoord] = transformPointsForward(Tr_Data{s}.meanshape2tf{k}, pixel_a_x_imgcoord', pixel_a_y_imgcoord');    
+    pixel_a_x_lmcoord = pixel_a_x_lmcoord';
+    pixel_a_y_lmcoord = pixel_a_y_lmcoord';
     
-    [pixel_b_x_lmcoord, pixel_b_y_lmcoord] = tformfwd(Tr_Data{s}.meanshape2tf{k}, pixel_b_x_imgcoord, pixel_b_y_imgcoord);
-    
+    [pixel_b_x_lmcoord, pixel_b_y_lmcoord] = transformPointsForward(Tr_Data{s}.meanshape2tf{k}, pixel_b_x_imgcoord', pixel_b_y_imgcoord');
+    pixel_b_x_lmcoord = pixel_b_x_lmcoord';
+    pixel_b_y_lmcoord = pixel_b_y_lmcoord';    
     
     pixel_a_x = int16(bsxfun(@plus, pixel_a_x_lmcoord, Tr_Data{s}.intermediate_shapes{stage}(lmarkID, 1, k)));
     pixel_a_y = int16(bsxfun(@plus, pixel_a_y_lmcoord, Tr_Data{s}.intermediate_shapes{stage}(lmarkID, 2, k)));
@@ -205,6 +208,7 @@ for i = 1:length(ind_samples)
     pixel_b_y = max(1, min(pixel_b_y, height));
     
     pdfeats(:, i) = double(Tr_Data{s}.img_gray(pixel_a_y + (pixel_a_x-1)*height)) - double(Tr_Data{s}.img_gray(pixel_b_y + (pixel_b_x-1)*height));
+       %./ double(Tr_Data{s}.img_gray(pixel_a_y + (pixel_a_x-1)*height)) + double(Tr_Data{s}.img_gray(pixel_b_y + (pixel_b_x-1)*height));
     
     % drawshapes(Tr_Data{s}.img_gray, [pixel_a_x pixel_a_y pixel_b_x pixel_b_y]);
     % hold off;
@@ -245,7 +249,7 @@ for i = 1:params.max_numfeats(stage)
         % figure, hold on, plot(shapes_residual(ind_lc, 1), shapes_residual(ind_lc, 2), 'r.')
         % plot(shapes_residual(ind_rc, 1), shapes_residual(ind_rc, 2), 'g.')
         % close;
-        
+        % compute 
         
         E_x_2_lc = mean(shapes_residual(ind_lc, 1).^2);
         E_x_lc = mean(shapes_residual(ind_lc, 1));

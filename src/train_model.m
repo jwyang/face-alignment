@@ -174,8 +174,8 @@ for i = 1:dbsize
 end
 
 % train random forests for each landmark
-% randf = cell(Param.max_numstage, 1);
-% Ws    = cell(Param.max_numstage, 1);
+randf = cell(Param.max_numstage, 1);
+Ws    = cell(Param.max_numstage, 1);
 
 %{
 if nargin > 2

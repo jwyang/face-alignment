@@ -192,11 +192,11 @@ for i = 1:length(ind_samples)
     pixel_b_x_lmcoord = pixel_b_x_lmcoord';
     pixel_b_y_lmcoord = pixel_b_y_lmcoord';    
     
-    pixel_a_x = int16(bsxfun(@plus, pixel_a_x_lmcoord, Tr_Data{s}.intermediate_shapes{stage}(lmarkID, 1, k)));
-    pixel_a_y = int16(bsxfun(@plus, pixel_a_y_lmcoord, Tr_Data{s}.intermediate_shapes{stage}(lmarkID, 2, k)));
+    pixel_a_x = int32(bsxfun(@plus, pixel_a_x_lmcoord, Tr_Data{s}.intermediate_shapes{stage}(lmarkID, 1, k)));
+    pixel_a_y = int32(bsxfun(@plus, pixel_a_y_lmcoord, Tr_Data{s}.intermediate_shapes{stage}(lmarkID, 2, k)));
     
-    pixel_b_x = int16(bsxfun(@plus, pixel_b_x_lmcoord, Tr_Data{s}.intermediate_shapes{stage}(lmarkID, 1, k)));
-    pixel_b_y = int16(bsxfun(@plus, pixel_b_y_lmcoord, Tr_Data{s}.intermediate_shapes{stage}(lmarkID, 2, k)));
+    pixel_b_x = int32(bsxfun(@plus, pixel_b_x_lmcoord, Tr_Data{s}.intermediate_shapes{stage}(lmarkID, 1, k)));
+    pixel_b_y = int32(bsxfun(@plus, pixel_b_y_lmcoord, Tr_Data{s}.intermediate_shapes{stage}(lmarkID, 2, k)));
     
     width = (Tr_Data{s}.width);
     height = (Tr_Data{s}.height);

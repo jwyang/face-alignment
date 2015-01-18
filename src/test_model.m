@@ -80,6 +80,7 @@ Param.meanshape        = S0(Param.ind_usedpts, :);
 dbsize = length(Data);
 
 % load('Ts_bbox.mat');
+augnumber = Param.augnumber;
 
 for i = 1:dbsize        
     % initializ the shape of current face image by randomly selecting multiple shapes from other face images       

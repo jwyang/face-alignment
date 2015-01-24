@@ -9,17 +9,17 @@ How to run the codes?
 
 (1) First of all, we need prepare datasets, such as afw, lfpw, helen, ibug, etc. All these can be downloaded freely from http://ibug.doc.ic.ac.uk/resources/facial-point-annotations. 
 
-(2) For training, run train_model.m with appropriate dataset name.
+(2) For training, run train_model.m with appropriate dataset name. Before that, define dbnames as {'Dataset_a', 'Dataset_b', ..., } for input.
 
-    usage: lbfmodel = train_model({'afw' 'lfpw'});
-
-(3) For testing, run test_model.m with dataset name and pre-trained model as input.
-
-    usage: load lbfmodel from disk, and then test_model({'ibug'}, lbfmodel);
+(3) For testing, run test_model.m with dataset name dbnames and pre-trained model as input.
     
 Dependencies
 
 (1) liblinear: http://www.csie.ntu.edu.tw/~cjlin/liblinear/.
+
+Learned Model
+
+Off-the-shelf model can be downloaded here: http://pan.baidu.com/s/1i325Rbn, whose performance is analogy to the lbf_fast model evaluated in the original paper.
 
 Q&A
 

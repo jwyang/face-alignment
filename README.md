@@ -54,6 +54,10 @@ A_4: It may be caused by Matlab version. For Matlab 2014, it will be okay. For e
 
     end
 
+Q_5: Some function correspondences from Matlab 2014 to older version
+
+A_5: fitgeotrans -> cp2tform, transformPointsForward -> tformfwd
+
 At last, for those who are from china, I am glad to discuss with you in the Tecent QQ group: 180634020
 
 

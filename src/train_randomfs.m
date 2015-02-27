@@ -291,67 +291,8 @@ thresh =  thresholds(ind_colmax(ind_max), ind_max);
 
 feat   = [anglepairs(ind_colmax(ind_max), :) radiuspairs(ind_colmax(ind_max), :)];
 
-lcind = find(pdfeats(ind_colmax(ind_max), :) < thresh);
-rcind = find(pdfeats(ind_colmax(ind_max), :) >= thresh);
-
-
-%{
-
-while (1)
-vars    = zeros(1, params.max_numfeat);
-borders = zeros(1, params.max_numfeat);
-for t = 1:params.max_numfeat
-    border = ceil(max(1, length(ind_samples)*rand(1)));
-    vars(:, t) = var_overall(t) - (var(pdfeats_sorted(t, 1:border)') + var(pdfeats_sorted(t, border:end)'));
-    borders(t) = border;
-end
-
-[val_max, ind_max] = max(vars);
-if val_max > 0
-    break;
-end
-end
-
-thresh = pdfeats_sorted(ind_max, (borders(ind_max)));
-feat   = [anglepairs(ind_max, :) radiupairs(ind_max, :)];
-
-lcind = find(pdfeats(ind_max, :) < thresh);
-rcind = find(pdfeats(ind_max, :) >= thresh);
-%}
-
-%{
-var_overall = mean(pdfeats.^2, 2) - mean(pdfeats, 2).^2;
-
-pdfeats_sorted = sort(pdfeats, 2);
-
-max_step = min(length(ind_samples), params.max_numthreshs);
-
-step = floor(length(ind_samples)/max_step);
-
-vars = zeros(max_step, params.max_numfeat);
-
-
-for t = 1:max_step
-    
-    var_lc = mean(pdfeats_sorted(:, 1:t*step).^2, 2)     - mean(pdfeats_sorted(:, 1:t*step), 2).^2;
-    var_rc = mean(pdfeats_sorted(:, t*step+1:end).^2, 2) - mean(pdfeats_sorted(:, t*step+1:end), 2).^2;
-    
-    vars(t, :) = var_overall' - (var_lc' + var_rc');
-end
-
-
-% find the feature correpsonding to maximum variacen reduction
-[vars_colmax, ind_colmax] = max(vars);
-[~, ind_max] = max(vars_colmax);
-
-% disp(strcat(num2str(ind_max), '-', num2str(ind_colmax(ind_max)*step)));
-
-thresh = pdfeats(ind_max, ind_colmax(ind_max)*step);
-feat   = [anglepairs(ind_max, :) radiuspairs(ind_max, :)];
-
-lcind = find(pdfeats(ind_max, :) < thresh);
-rcind = find(pdfeats(ind_max, :) >= thresh);
-%}
+lcind = ind_samples(find(pdfeats(ind_colmax(ind_max), :) < thresh));
+rcind = ind_samples(find(pdfeats(ind_colmax(ind_max), :) >= thresh));
 
 end
 

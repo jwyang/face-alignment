@@ -19,7 +19,8 @@ Dependencies
 
 Learned Model
 
-Off-the-shelf model can be downloaded here: http://pan.baidu.com/s/1i325Rbn, whose performance is analogy to the lbf_fast model evaluated in the original paper.
+Off-the-shelf model can be downloaded here: http://pan.baidu.com/s/1i325Rbn, whose configure file can be found in folder "models". 
+Its performance is analogy to the lbf_fast model evaluated in the original paper. 
 
 Q&A
 
@@ -58,3 +59,4 @@ Q_5: Some function correspondences from Matlab 2014 to older version
 
 A_5: fitgeotrans -> cp2tform, transformPointsForward -> tformfwd
 
+For those Tecent QQ users, we can discuss more in the group: 180634020.

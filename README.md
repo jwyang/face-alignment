@@ -15,7 +15,7 @@ This project is aimed to reproducing (partially) the face alignment algorithm in
 
 (3) For testing, run test_model in command line window after having obtained trained model. Please remember to initialize dbnames to be the names of dataset you would like to test on.
     
-Dependencies
+##Dependencies
 
 (1) liblinear: http://www.csie.ntu.edu.tw/~cjlin/liblinear/.
 

@@ -38,22 +38,7 @@ Its performance is analogy to the lbf_fast model evaluated in the original paper
 
 * Why does an error occur when initializing parallel computing?
 
-      It may be caused by Matlab version. For Matlab 2014, it will be okay. For earlier version, please use the following commands:
-
-
-    if params.isparallel
-
-     if matlabpool('size') <= 0
-
-         matlabpool('open','local',4);
-
-     else
-
-         disp('Already initialized');
-
-     end
-
-    end
+      It may be caused by Matlab version. For Matlab 2014, it will be okay. For earlier version, please use matlabpool alternatively.
 
 * Some function correspondences from Matlab 2014 to older version
 

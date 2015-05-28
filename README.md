@@ -1,7 +1,9 @@
 Face alignment in 3000 FPS
 ==========================
 
-This project is built by reproducing (at least partially) the face alignment algorithm in the CVPR 2014 paper: 
+##Introduction
+
+This project is aimed to reproducing (partially) the face alignment algorithm in the CVPR 2014 paper: 
 
   Face Alignment at 3000 FPS via Regressing Local Binary Features. Shaoqing Ren, Xudong Cao, Yichen Wei, Jian Sun; The IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2014, pp. 1685-1692 
 
@@ -9,9 +11,9 @@ This project is built by reproducing (at least partially) the face alignment alg
 
 (1) First of all, we need prepare datasets, such as afw, lfpw, helen, ibug, etc. All these can be downloaded freely from http://ibug.doc.ic.ac.uk/resources/facial-point-annotations. 
 
-(2) For training, run train_model.m with appropriate dataset name. Before that, define dbnames as {'Dataset_a', 'Dataset_b', ..., } for input.
+(2) For training, initialize variable dbnames as {'Dataset_a', 'Dataset_b', ..., }, then run train_model in command line window.
 
-(3) For testing, run test_model.m with dataset name dbnames and pre-trained model as input.
+(3) For testing, run test_model in command line window after having obtained trained model. Please remember to initialize dbnames to be the names of dataset you would like to test on.
     
 Dependencies
 
@@ -44,4 +46,4 @@ Its performance is analogy to the lbf_fast model evaluated in the original paper
 
       fitgeotrans -> cp2tform, transformPointsForward -> tformfwd
 
-####For those Tecent QQ users, we can discuss more in the group: 180634020.
+For those Tecent QQ users, we can discuss more in the group: 180634020.

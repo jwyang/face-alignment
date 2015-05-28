@@ -24,19 +24,19 @@ Its performance is analogy to the lbf_fast model evaluated in the original paper
 
 ##Q&A
 
-*How to get the file Path_Images.txt?
+* How to get the file Path_Images.txt?
 
 A: It can be obtained by run bat file in the root folder of a dataset, the code is simply "dir /b/s/p/w *.jpg>Path_Images.txt".
 
-*What is Ts_bbox.mat?
+* What is Ts_bbox.mat?
 
 A: This problem is solved in recent version. Ts_bbox is a transformation matrix to adapt bounding boxes obtained from face detector to the boxes suitable for the face alignment algorithm.
 
-*: How to define the input variable dbnames in train_model and test_model functions?
+* How to define the input variable dbnames in train_model and test_model functions?
 
 A: It is formed as a cell array {'dbname_1' 'dbname_2' ... 'dbname_N'}. For example, if we use the images in afw for trainig, we then define it as {'afw'}.
 
-*Why does an error occur when initializing parallel computing?
+* Why does an error occur when initializing parallel computing?
 
 A: It may be caused by Matlab version. For Matlab 2014, it will be okay. For earlier version, please use the following commands:
 

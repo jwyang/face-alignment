@@ -5,7 +5,7 @@ This project is built by reproducing (at least partially) the face alignment alg
 
   Face Alignment at 3000 FPS via Regressing Local Binary Features. Shaoqing Ren, Xudong Cao, Yichen Wei, Jian Sun; The IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2014, pp. 1685-1692 
 
-**How to run the codes?
+##How to run the codes?
 
 (1) First of all, we need prepare datasets, such as afw, lfpw, helen, ibug, etc. All these can be downloaded freely from http://ibug.doc.ic.ac.uk/resources/facial-point-annotations. 
 
@@ -17,12 +17,12 @@ Dependencies
 
 (1) liblinear: http://www.csie.ntu.edu.tw/~cjlin/liblinear/.
 
-**Learned Model
+##Learned Model
 
 Off-the-shelf model can be downloaded here: http://pan.baidu.com/s/1i325Rbn, whose configure file can be found in folder "models". 
 Its performance is analogy to the lbf_fast model evaluated in the original paper. 
 
-**Q&A
+##Q&A
 
 Q_1: How to get the file Path_Images.txt?
 

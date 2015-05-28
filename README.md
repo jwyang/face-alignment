@@ -46,4 +46,4 @@ Its performance is analogy to the lbf_fast model evaluated in the original paper
 
       fitgeotrans -> cp2tform, transformPointsForward -> tformfwd
 
-For those Tecent QQ users, we can discuss more in the group: 180634020.
+For those Tecent QQ users, we can discuss more in the group face hacker: 180634020.

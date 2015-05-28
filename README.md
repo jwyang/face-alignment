@@ -9,15 +9,15 @@ This project is aimed to reproducing (partially) the face alignment algorithm in
 
 ##How to run the codes?
 
-(1) First of all, we need prepare datasets, such as afw, lfpw, helen, ibug, etc. All these can be downloaded freely from http://ibug.doc.ic.ac.uk/resources/facial-point-annotations. 
+* First of all, we need prepare datasets, such as afw, lfpw, helen, ibug, etc. All these can be downloaded freely from http://ibug.doc.ic.ac.uk/resources/facial-point-annotations.  Then get the filelist file Path_Images.txt for each dataset (please refer to the Q&A).
 
-(2) For training, initialize variable dbnames as {'Dataset_a', 'Dataset_b', ..., }, then run train_model in command line window.
+* For training, initialize variable dbnames as {'Dataset_a', 'Dataset_b', ..., }, then run train_model in command line window.
 
-(3) For testing, run test_model in command line window after having obtained trained model. Please remember to initialize dbnames to be the names of dataset you would like to test on.
+* For testing, run test_model in command line window after having obtained trained model. Please remember to initialize dbnames to be the names of dataset you would like to test on.
     
 ##Dependencies
 
-(1) liblinear: http://www.csie.ntu.edu.tw/~cjlin/liblinear/.
+* liblinear: http://www.csie.ntu.edu.tw/~cjlin/liblinear/.
 
 ##Learned Model
 

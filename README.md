@@ -34,7 +34,7 @@ Its performance is analogy to the lbf_fast model evaluated in the original paper
 
       This problem is solved in recent version. Ts_bbox is a transformation matrix to adapt bounding boxes obtained from face detector to the boxes suitable for the face alignment algorithm.
 
-* How to define the input variable dbnames in train_model and test_model functions?
+* How to define the variable dbnames in train_model and test_model functions?
 
       It is formed as a cell array {'dbname_1' 'dbname_2' ... 'dbname_N'}. For example, if we use the images in afw for trainig, we then define it as {'afw'}.
 

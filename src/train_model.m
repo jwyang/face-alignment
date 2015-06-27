@@ -45,7 +45,7 @@ Tr_Data    = [];
 % Tr_Bboxes  = [];
 for i = 1:length(dbnames)
     % load training samples (including training images, and groundtruth shapes)
-    imgpathlistfile = strcat('D:\Projects_Face_Detection\Datasets\', dbnames{i}, '\Path_Images.txt');
+    imgpathlistfile = strcat('..\datasets\', dbnames{i}, '\Path_Images.txt');
     tr_data = loadsamples(imgpathlistfile, 2);
     Tr_Data = [Tr_Data; tr_data];
 end

@@ -46,6 +46,6 @@ Its performance is analogy to the lbf_fast model evaluated in the original paper
 
       fitgeotrans -> cp2tform, transformPointsForward -> tformfwd
 
-##Discussion Group
+##Discussion
 
-For those Tencent QQ users, you can join the group face hacker (180634020) to discuss more on facial algorithms. Along with your request, please provide the affiliation (university/company) where you are studying/working.
+For those Tencent QQ users, you can join the group face hacker (180634020) to discuss more on facial algorithms. Along with your request, please provide the affiliation (university/company where you are studying/working).

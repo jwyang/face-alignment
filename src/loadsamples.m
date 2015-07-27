@@ -14,10 +14,10 @@ Data = cell(length(imgpathlist), 1);
 setnames = {'train' 'test'};
 
 % Create a cascade detector object.
-faceDetector = vision.CascadeObjectDetector();
-bboxes_facedet = zeros(length(imgpathlist), 4);
-bboxes_gt      = zeros(length(imgpathlist), 4);
-isdetected = zeros(length(imgpathlist), 1);
+% faceDetector = vision.CascadeObjectDetector();
+% bboxes_facedet = zeros(length(imgpathlist), 4);
+% bboxes_gt      = zeros(length(imgpathlist), 4);
+% isdetected = zeros(length(imgpathlist), 1);
 
 parfor i = 1:length(imgpathlist)
     img = im2uint8(imread(imgpathlist{i}));
@@ -43,8 +43,14 @@ parfor i = 1:length(imgpathlist)
     right_x = double(min(region(1) + region(3) - 1, Data{i}.width_orig));
     
     img_region = img(region(2):bottom_y, region(1):right_x, :);
-    
     Data{i}.shape_gt = bsxfun(@minus, Data{i}.shape_gt, double([region(1) region(2)]));
+    
+    % to save memory cost during training
+    if exc_setlabel == 2
+        ratio = min(1, sqrt(single(150 * 150) / single(size(img_region, 1) * size(img_region, 2))));
+        img_region = imresize(img_region, ratio);
+        Data{i}.shape_gt = Data{i}.shape_gt .* ratio;
+    end    
     Data{i}.bbox_gt = getbbox(Data{i}.shape_gt);
     
     Data{i}.bbox_facedet = getbbox(Data{i}.shape_gt);

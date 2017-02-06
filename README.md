@@ -9,7 +9,7 @@ This project is aimed to reproducing (partially) the face alignment algorithm in
 
 ##How to run the codes?
 
-* First of all, we need prepare datasets, such as afw, lfpw, helen, ibug, etc. All these can be downloaded freely from http://ibug.doc.ic.ac.uk/resources/facial-point-annotations.  Then get the filelist file Path_Images.txt for each dataset (please refer to the Q&A).
+* First of all, we need prepare datasets, such as afw, lfpw, helen, ibug, etc. All these can be downloaded freely from https://ibug.doc.ic.ac.uk/resources/facial-point-annotations.  Then get the filelist file Path_Images.txt for each dataset (please refer to the Q&A).
 
 * For training, initialize variable dbnames as {'Dataset_a', 'Dataset_b', ..., }, then run train_model in command line window.
 
